@@ -3,27 +3,50 @@
  *@author Erin Amer
  */
 
+/**
+ * The number of notes to display.
+ * @type {number}
+ */
+var numNotes;
 
-var notes; //number of notes on display
-var osc; //the oscillator playing the notes
-var playing; //whether or not a note is playing
-var notePlaying; //contains which note is currently being played
+/**
+ * Sound generator that plays the notes.
+ * @type {Object}
+ */
+var osc;
 
-var noteNames; //labels for the 12 notes
+/**
+ * Whether or not a note is playing.
+ * @type {boolean}
+ */
+var playing;
+
+/**
+ * The midi number of the current note being played.
+ * @type {number}
+ */
+var notePlaying;
+
+/**
+ * Labels of the 12 notes.
+ * @const {string[]}
+ */
+var NOTENAMES;
 
 function setup() {
 	createCanvas(1000, 800);
-	colorMode(HSB, height*1.5, 255, 255, 255); //rainbow effect
+	colorMode(HSB, height*1.5, 255, 255, 255); // Link rainbow effect to height
 	
-	notes = 25; //number of notes to display
+	numNotes = 25;
 	playing = false;
 	
-	noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+	NOTENAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 	
-	//initialize the oscillator
+	// Initialize the oscillator
 	osc = new p5.Oscillator();
 	osc.setType('square');
 	osc.amp(0);
+	osc.start();
 	
 	drawBG();
 }
@@ -35,48 +58,45 @@ function draw() {
 	displayNote();
 }
 
-//draws rainbow
+/** Draws the rainbow background. */
 function drawBG() {
 	stroke(255);
-	for (var i = 0; i < notes; i++) {
-		fill((height/notes) * i, 200, 255);
-		rect(0, (height/notes)*i, width, (height/notes));
+	for (var i = 0; i < numNotes; i++) {
+		fill((height/numNotes) * i, 200, 255);
+		rect(0, (height/numNotes)*i, width, (height/numNotes));
 	}
 }
 
-//checks which note mouse is over and plays it
+/** Checks which note the mouse is over and plays it */
 function update() {
 	
-	//check if mouse is within sketch
+	// Check if mouse is within sketch
 	if (mouseX > 0 && mouseX <= width && mouseY > 0 && mouseY <= height) {
 		
+		// Turn up volume from 0
 		if (playing == false) {
 			osc.amp(0.8, 0.5);
-			osc.start();
 			playing = true;
 		}
 		
-		//check which note
-		for (var i = 0; i < notes; i++) {
-			var upperBound = (height/notes) * i;
+		// Check which note mouse is over
+		for (var i = 0; i < numNotes; i++) {
+			var upperBound = (height/numNotes) * i;
 			
-			if (mouseY > upperBound && mouseY < upperBound + (height/notes)) {
-				//change note
+			if (mouseY > upperBound && mouseY < upperBound + (height/numNotes)) {
+				// Change frequency to current note
 				notePlaying = 72 - i;
 				osc.freq(midiToFreq(notePlaying));
 				
-				//create visual "depression"
+				// Create visual "depression"
 				noStroke();
 				fill(0, 0, 50, 50);
-				rect(0, upperBound, width, (height/notes));
+				rect(0, upperBound, width, (height/numNotes));
 			}
-
-			
 		}
-		
 	}
 	else {
-		//stop playing note when mouse is out of sketch
+		// Stop playing note when mouse is out of sketch
 		if (playing == true) {
 			osc.amp(0, 0.5)
 			playing = false;
@@ -84,29 +104,29 @@ function update() {
 	}
 }
 
-//displays the current note being played and labels the keys
+/** Displays the current note being played and labels the "keys". */
 function displayNote() {
 	textAlign(RIGHT, BOTTOM);
 	textSize(24);
 	noStroke(0);
 	fill(255);
 	
+	// 
 	var playingText;
-
-	if(playing) {
-		playingText = "Playing " + noteNames[notePlaying % 12];
-	}
+	
+	if(playing)
+		playingText = "Playing " + NOTENAMES[notePlaying % 12];
 	else
 		playingText = "Playing nothing";
 	
 	text(playingText, width-30, height-5);
 
-	for (var i = 0; i < notes; i++) {
-		var upperBound = (height/notes) * i;
+	for (var i = 0; i < numNotes; i++) {
+		var upperBound = (height/numNotes) * i;
 
 		textAlign(LEFT, TOP);
 		textSize(20);
 		fill(0, 0, 50, 200);
-		text(noteNames[(72-i) % 12], 10, upperBound+5);
+		text(NOTENAMES[(72-i) % 12], 10, upperBound+5);
 	}
 }
