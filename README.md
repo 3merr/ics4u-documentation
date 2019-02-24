@@ -1,4 +1,4 @@
-# p5.sound-piano-roll
-p5.sound practice
+# p5.sound Piano Roll
 
-test test
+A test done to learn the p5.sound library within p5.js.
+Can be viewed [here](https://erinamer.github.io/p5.sound-piano-roll/) (volume warning)
